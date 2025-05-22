@@ -1,11 +1,25 @@
 "use client";
 import { useState } from "react";
 
-export default function AutoGrantHeroHeader() {
+export default function Hero() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const openAuthModal = () => {
+    setIsAuthModalOpen(true);
+  };
+
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
+  };
+
+  const handleAuthAction = () => {
+    // Redirect to onboarding page
+    window.location.href = "/onboarding";
   };
 
   return (
@@ -53,15 +67,15 @@ export default function AutoGrantHeroHeader() {
 
             {/* Desktop Login/Signup */}
             <div className="hidden md:flex items-center space-x-4">
-              <a href="/login" className="text-gray-700 font-bold hover:text-emerald-600">
+              <button onClick={openAuthModal} className="text-gray-700 font-bold hover:text-emerald-600">
                 Log in
-              </a>
-              <a
-                href="/signup"
+              </button>
+              <button
+                onClick={openAuthModal}
                 className="bg-emerald-600 text-white px-4 py-2 rounded-full hover:bg-emerald-700 transition duration-300"
               >
                 Sign Up Free
-              </a>
+              </button>
             </div>
 
             {/* Mobile Menu Button */}
@@ -134,18 +148,18 @@ export default function AutoGrantHeroHeader() {
                 </a>
               </div>
               <div className="flex items-center space-x-4 pt-4 border-t border-gray-200">
-                <a
-                  href="/login"
+                <button
+                  onClick={openAuthModal}
                   className="text-gray-700 hover:text-emerald-600"
                 >
                   Log in
-                </a>
-                <a
-                  href="/signup"
+                </button>
+                <button
+                  onClick={openAuthModal}
                   className="bg-emerald-600 text-white px-4 py-2 rounded-full hover:bg-emerald-700 transition duration-300"
                 >
                   Sign Up Free
-                </a>
+                </button>
               </div>
             </div>
           )}
@@ -162,7 +176,7 @@ export default function AutoGrantHeroHeader() {
           </div>
 
           <h1 className="text-4xl md:text-5xl font-bold text-white relative leading-snug">
-            <span className="absolute left-4 md:left-45 -top-4 text-white text-3xl md:text-4xl">
+            <span className="absolute left-0 md:left-45 -top-4 text-white text-xl md:text-4xl">
               ✦
             </span>
             Start, manage, and complete{" "}
@@ -170,7 +184,7 @@ export default function AutoGrantHeroHeader() {
               <br />{" "}
             </span>
             grants easily with AutoGrant AI
-            <span className="absolute -bottom-5 text-[#00FFC2] text-lg md:text-2xl">
+            <span className="absolute bottom-0 md:-bottom-5 text-[#00FFC2] text-base md:text-2xl">
               ✦
             </span>
           </h1>
@@ -220,9 +234,123 @@ export default function AutoGrantHeroHeader() {
         </div>
       </div>
 
+      {/* Auth Modal */}
+      {isAuthModalOpen && (
+        <div className="fixed inset-0 bg-black/80 bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 relative">
+            {/* Close Button */}
+            <button
+              onClick={closeAuthModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
 
+            {/* Modal Content */}
+            <div className="text-center mb-6">
+                <div className="rounded-full mr-2 flex items-center justify-center">
+                  <img
+                    src="/logo.png"
+                    alt="AutoGrant Logo"
+                    className="w-8 h-8"
+                  />
+                </div>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                Welcome to AutoGrant
+              </h2>
+              <p className="text-gray-600">
+                One tap, one click access to all grants
+              </p>
+            </div>
 
+            {/* Email Input */}
+            <div className="mb-4">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                placeholder="hello@autogrant.ng"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              />
+            </div>
 
+            {/* Login Button */}
+            <button
+              onClick={handleAuthAction}
+              className="w-full cursor-pointer bg-emerald-600 text-white py-3 rounded-lg font-medium hover:bg-emerald-700 transition duration-300 mb-4"
+            >
+              Login
+            </button>
+
+            {/* Divider */}
+            <div className="flex items-center mb-4">
+              <div className="flex-1 border-t border-gray-300"></div>
+              <span className="px-4 text-gray-500 text-sm">or</span>
+              <div className="flex-1 border-t border-gray-300"></div>
+            </div>
+
+            {/* Google Login Button */}
+            <button
+              onClick={handleAuthAction}
+              className="w-full border cursor-pointer border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition duration-300 flex items-center justify-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                className="mr-2"
+              >
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                />
+              </svg>
+              Continue with Google
+            </button>
+
+            {/* Terms */}
+            <p className="text-xs text-gray-500 text-center mt-4">
+              By continuing you agree to AutoGrant{" "}
+              <a href="#" className="text-emerald-600 hover:underline">
+                terms
+              </a>{" "}
+              and{" "}
+              <a href="#" className="text-emerald-600 hover:underline">
+                privacy policy
+              </a>
+              .
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
