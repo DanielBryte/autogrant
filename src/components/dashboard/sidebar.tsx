@@ -3,19 +3,19 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { 
-  LayoutDashboard, 
-  Lightbulb, 
-  FileText, 
-  Milestone, 
-  Wallet, 
-  Building2, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Lightbulb,
+  FileText,
+  Milestone,
+  Wallet,
+  Building2,
+  Settings,
   HelpCircle,
   ChevronDown,
   Plus,
   X,
-  Menu
+  Menu,
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -73,7 +73,10 @@ export default function Sidebar({ className }: SidebarProps) {
     <div className="flex h-full flex-col bg-background">
       {/* Logo */}
       <div className="flex h-14 items-center border-b px-4">
-        <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 font-semibold"
+        >
           <span className="text-green-500 h-6 w-6">✓</span>
           <span className="text-lg">AutoGrant</span>
         </Link>
@@ -102,8 +105,8 @@ export default function Sidebar({ className }: SidebarProps) {
               onClick={() => setIsMobileMenuOpen(false)}
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors",
-                pathname === item.href 
-                  ? "bg-accent text-green-600 font-semibold" 
+                pathname === item.href
+                  ? "bg-accent text-green-600 font-semibold"
                   : "text-muted-foreground"
               )}
             >
@@ -118,11 +121,14 @@ export default function Sidebar({ className }: SidebarProps) {
           <div className="text-xs font-semibold text-muted-foreground tracking-wider mb-2">
             BUSINESS PROFILE
           </div>
-          <div className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer">
+          <Link
+            href="/dashboard/business"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+          >
             <Building2 className="h-5 w-5" />
             <span>Acabeta LLC</span>
             <ChevronDown className="h-4 w-4 ml-auto" />
-          </div>
+          </Link>
           <div className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer">
             <Plus className="h-5 w-5" />
             <span>Add new profile</span>
@@ -140,8 +146,8 @@ export default function Sidebar({ className }: SidebarProps) {
               onClick={() => setIsMobileMenuOpen(false)}
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors",
-                pathname === item.href 
-                  ? "bg-accent text-green-600 font-semibold" 
+                pathname === item.href
+                  ? "bg-accent text-green-600 font-semibold"
                   : "text-muted-foreground"
               )}
             >
@@ -167,7 +173,12 @@ export default function Sidebar({ className }: SidebarProps) {
       </Button>
 
       {/* Desktop Sidebar */}
-      <aside className={cn("hidden md:flex w-60 flex-col border-r border-border", className)}>
+      <aside
+        className={cn(
+          "hidden md:flex w-60 flex-col border-r border-border",
+          className
+        )}
+      >
         <SidebarContent />
       </aside>
 
