@@ -18,12 +18,12 @@ export default function DashboardLayout({
       {/* Main content area */}
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* TopBar Component - Hidden on mobile since mobile has its own header */}
-        <TopBar className="hidden md:flex" />
+        <TopBar className=" md:flex" />
         
         {/* Main content */}
         <main className="flex-1 overflow-auto bg-white md:bg-gray-50">
           {/* Mobile spacing to account for fixed menu button */}
-          <div className="h-full pt-12 md:pt-0">
+          <div className="h-full md:pt-0">
             {children}
           </div>
         </main>
