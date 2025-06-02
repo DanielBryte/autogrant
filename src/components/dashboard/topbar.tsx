@@ -263,13 +263,13 @@ export default function TopBar({ className, showSearch = true }: TopBarProps) {
         <div className="relative" ref={userRef}>
           <Button
             variant="ghost"
-            className="flex items-center space-x-2 h-8.5 border rounded-full"
+            className="flex items-center space-x-2 h-9 border rounded-full"
             onClick={() => {
               setIsUserDropdownOpen(!isUserDropdownOpen);
               setIsNotificationDropdownOpen(false);
             }}
           >
-            <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+            <div className="w-7 h-7 bg-green-500 rounded-full flex items-center justify-center">
               <User className="w-3 h-3 text-white" />
             </div>
             
