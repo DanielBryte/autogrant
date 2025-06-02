@@ -72,29 +72,30 @@ const BusinessPage = () => {
     'Business Needs',
     'Documents'
   ];
-  const renderBusinessOverview = () => (
-    <div className="bg-white rounded-lg shadow-sm p-8">
-      {/* Business Logo Section */}
-      <div className="mb-8">
-        <div className="flex items-start space-x-6">
-          <div className="flex-shrink-0">
-            <div className="w-20 h-20 bg-gray-800 rounded-lg flex items-center justify-center">
-              <span className="text-white text-2xl font-bold">DC</span>
-            </div>
-          </div>
-          <div className="flex-grow">
-            <h3 className="text-lg font-medium text-gray-900 mb-1">Business logo</h3>
-            <p className="text-sm text-gray-500 mb-3">Support PNGs, JPEGs and GIFs under 10mb</p>
-            <button className="flex items-center space-x-2 text-sm text-gray-600 hover:text-gray-800">
-              <Upload className="w-4 h-4" />
-              <span>Upload new photo</span>
-            </button>
+
+const renderBusinessOverview = () => (
+  <div className="bg-white rounded-lg shadow-sm p-4 sm:p-8">
+    {/* Business Logo Section */}
+    <div className="mb-6 sm:mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
+        <div className="flex-shrink-0">
+          <div className="w-16 sm:w-20 h-16 sm:h-20 bg-gray-800 rounded-lg flex items-center justify-center">
+            <span className="text-white text-xl sm:text-2xl font-bold ">DC</span>
           </div>
         </div>
+        <div className="flex-grow">
+          <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-1">Business logo</h3>
+          <p className="text-xs sm:text-sm text-gray-500 mb-3">Support PNGs, JPEGs and GIFs under 10mb</p>
+          <button className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600 hover:text-gray-800">
+            <Upload className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span>Upload new photo</span>
+          </button>
+        </div>
       </div>
+    </div>
 
-      {/* Form Fields */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {/* Form Fields */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Business Name*
@@ -731,50 +732,59 @@ const BusinessPage = () => {
     }
   };
 
-  // Main component return
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50">
       
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
+      <div className="w-full overflow-auto">
 
         {/* Page Content */}
-        <div className="p-6">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">My Business Profile</h1>
-            <p className="text-gray-600">
+        <div className="p-4 sm:p-6">
+          <div className="mb-4 sm:mb-6">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">My Business Profile</h1>
+            <p className="text-sm sm:text-base text-gray-600">
               Here you provide all information to aid the AutoGrant AI tailor your grant applications
             </p>
           </div>
 
           {/* Tabs */}
-          <div className="mb-6">
+         {/* Tabs - Mobile Scrollable */}
+          <div className="mb-4 sm:mb-6">
             <div className="border-b border-gray-200">
-              <nav className="-mb-px flex space-x-8">
+              <nav className="-mb-px flex overflow-x-auto whitespace-nowrap hide-scrollbar">
                 {tabs.map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setCurrentTab(tab)}
-                    className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                      currentTab === tab
-                        ? 'border-teal-500 text-teal-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
+                    className={`
+                      py-2 px-3 sm:px-4 
+                      border-b-2 
+                      text-xs sm:text-sm 
+                      font-medium 
+                      whitespace-nowrap
+                      ${
+                        currentTab === tab
+                          ? 'border-teal-500 text-teal-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }
+                    `}
                   >
                     {tab}
                   </button>
                 ))}
               </nav>
             </div>
+            </div>
+
+      {/* Form Fields - Update grid layouts */}
+          <div className="space-y-4 sm:space-y-6">
+            {renderTabContent()}
           </div>
 
-          {/* Tab Content */}
-          {renderTabContent()}
-
           {/* Save Button */}
-          <div className="mt-8">
-            <button className="w-full bg-teal-600 text-white py-3 px-4 rounded-md font-medium hover:bg-teal-700 transition-colors">
+          <div className="mt-6 sm:mt-8 px-4 sm:px-0">
+            <button className="w-full bg-teal-600 text-white py-2.5 sm:py-3 px-4 rounded-md text-sm sm:text-base font-medium hover:bg-teal-700 transition-colors">
               Save
             </button>
           </div>
