@@ -202,9 +202,9 @@ export default function TopBar({ className, showSearch = true }: TopBarProps) {
             )}
           </Button>
 
-          {/* Notifications Dropdown - responsive design */}
+{/* Notifications Dropdown - responsive design */}
           {isNotificationDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-80 md:w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+            <div className="absolute right-0 mt-2 w-55 md:w-80 max-w-[380px] bg-white border border-gray-200 rounded-md shadow-lg z-50 transform -translate-x-1/2 md:translate-x-0 left-1/2 md:left-auto">
               <div className="p-4 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-semibold">Notifications</h3>
@@ -263,7 +263,7 @@ export default function TopBar({ className, showSearch = true }: TopBarProps) {
         <div className="relative" ref={userRef}>
           <Button
             variant="ghost"
-            className="flex items-center space-x-2 h-8 px-2"
+            className="flex items-center space-x-2 h-8.5 border rounded-full"
             onClick={() => {
               setIsUserDropdownOpen(!isUserDropdownOpen);
               setIsNotificationDropdownOpen(false);
@@ -272,6 +272,7 @@ export default function TopBar({ className, showSearch = true }: TopBarProps) {
             <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
               <User className="w-3 h-3 text-white" />
             </div>
+            
             <ChevronDown className="w-3 h-3 text-gray-600" />
           </Button>
 
