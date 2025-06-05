@@ -30,8 +30,8 @@ export default function Header() {
   return (
     <div className="bg-white">
       {/* Navbar */}
-      <nav className={`w-full py-4 px-6 relative z-10 transition-all duration-1000 ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0'}`}>
-        <div className="max-w-7xl mx-auto bg-white rounded-full shadow-lg p-4 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+      <nav className={`w-full md:py-4 md:px-6 relative z-10 transition-all duration-1000 ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0'}`}>
+        <div className="md:max-w-7xl mx-auto bg-white md:rounded-full shadow-sm md:shadow-lg p-4 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <a href="/" className="flex items-center group">
