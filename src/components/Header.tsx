@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 
-export default function Hero() {
+export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -28,17 +28,10 @@ export default function Hero() {
   };
 
   return (
-    <div className="bg-emerald-600 md:min-h-screen overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-10 -left-10 w-40 h-40 bg-emerald-400/20 rounded-full blur-xl animate-pulse"></div>
-        <div className="absolute top-1/3 -right-20 w-60 h-60 bg-emerald-300/15 rounded-full blur-2xl animate-pulse delay-1000"></div>
-        <div className="absolute bottom-10 left-1/4 w-32 h-32 bg-emerald-500/20 rounded-full blur-lg animate-pulse delay-500"></div>
-      </div>
-
+    <div className="bg-white">
       {/* Navbar */}
-      <nav className={`w-full md:py-4 md:px-6 relative z-10 transition-all duration-1000 ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0'}`}>
-        <div className="max-w-7xl bg-white md:rounded-full shadow-lg p-4 md:my-4 md:mx-4 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+      <nav className={`w-full py-4 px-6 relative z-10 transition-all duration-1000 ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0'}`}>
+        <div className="max-w-7xl mx-auto bg-white rounded-full shadow-lg p-4 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <a href="/" className="flex items-center group">
@@ -161,76 +154,6 @@ export default function Hero() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <div className="py-10 md:py-20 relative z-10">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <div className={`mb-2 text-white/80 flex justify-center items-center transition-all duration-1000 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`} style={{ transitionDelay: '600ms' }}>
-            <span className="text-sm text-[#00FFC2] font-medium italic animate-pulse">
-              AI-powered assistant
-            </span>
-          </div>
-
-          <h1 className={`text-4xl md:text-5xl font-bold text-white relative leading-snug transition-all duration-1200 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`} style={{ transitionDelay: '800ms' }}>
-            <span className="absolute left-0 md:left-45 -top-4 text-white text-xl md:text-4xl animate-spin-slow">
-              ✦
-            </span>
-            Start, manage, and complete{" "}
-            <span className="hidden md:inline">
-              <br />{" "}
-            </span>
-            <span className="bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent animate-pulse">
-              grants easily
-            </span> with AutoGrant AI
-            <span className="absolute bottom-0 md:-bottom-5 text-[#00FFC2] text-base md:text-2xl animate-bounce">
-              ✦
-            </span>
-          </h1>
-
-          <p className={`text-white/90 mb-8 text-lg transition-all duration-1000 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`} style={{ transitionDelay: '1000ms' }}>
-            One tap, one click access to all grants
-          </p>
-
-          <div className={`max-w-2xl mx-auto transition-all duration-1200 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`} style={{ transitionDelay: '1200ms' }}>
-            <div className="relative bg-white rounded-full hover:shadow-2xl transition-all duration-500 group">
-              <input
-                type="text"
-                placeholder="Find the latest grant programs you can apply to..."
-                className="w-full px-6 py-4 md:py-5 text-gray-800 rounded-full shadow-md focus:outline-none focus:ring-4 focus:ring-emerald-300/50 transition-all duration-300"
-              />
-              <button className="absolute right-2 top-2 bg-emerald-600 text-white p-2.5 md:p-4 rounded-full hover:bg-emerald-700 transition-all duration-300 hover:scale-110 hover:rotate-12 group-hover:animate-pulse">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Dashboard Preview */}
-      <div className="relative">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className={`rounded-t-lg shadow-lg overflow-hidden transition-all duration-1500 hover:scale-105 hover:shadow-2xl ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-32 opacity-0'}`} style={{ transitionDelay: '1400ms' }}>
-            <img
-              src="/dashboard.png"
-              alt="AutoGrant Dashboard Preview"
-              className="w-full h-auto"
-            />
-          </div>
-        </div>
-      </div>
-
       {/* Auth Modal */}
       {isAuthModalOpen && (
         <div className="fixed inset-0 bg-black/80 bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn">
@@ -336,11 +259,11 @@ export default function Hero() {
             {/* Terms */}
             <p className="text-xs text-gray-500 text-center mt-4">
               By continuing you agree to AutoGrant{" "}
-              <a href="#" className="text-emerald-600 hover:underline transition-all duration-300">
+              <a href="/terms" className="text-emerald-600 hover:underline transition-all duration-300">
                 terms
               </a>{" "}
               and{" "}
-              <a href="#" className="text-emerald-600 hover:underline transition-all duration-300">
+              <a href="/privacy-policy" className="text-emerald-600 hover:underline transition-all duration-300">
                 privacy policy
               </a>
               .
@@ -370,25 +293,12 @@ export default function Hero() {
           }
         }
         
-        @keyframes spin-slow {
-          from { 
-            transform: rotate(0deg); 
-          }
-          to { 
-            transform: rotate(360deg); 
-          }
-        }
-        
         .animate-fadeIn {
           animation: fadeIn 0.3s ease-out;
         }
         
         .animate-slideUp {
           animation: slideUp 0.4s ease-out;
-        }
-        
-        .animate-spin-slow {
-          animation: spin-slow 8s linear infinite;
         }
       `}</style>
     </div>

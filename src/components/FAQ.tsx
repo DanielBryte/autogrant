@@ -43,7 +43,7 @@ const FAQ: React.FC = () => {
   };
   
   return (
-    <div className="py-16 px-4 bg-white">
+    <div id='faqs' className="py-16 px-4 bg-white">
       <div className="max-w-3xl mx-auto">
         <h2 className="text-4xl font-bold text-black text-center mb-16">
           Frequently asked questions
