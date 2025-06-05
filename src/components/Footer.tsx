@@ -32,7 +32,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="/features/grant-analyzer"
+                  href="#features"
                   className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
                 >
                   Grant Analyzer
@@ -40,7 +40,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/features/autofill"
+                  href="#features"
                   className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
                 >
                   Autofill
@@ -48,7 +48,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/features/grant-repo"
+                  href="#features"
                   className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
                 >
                   Grant repo
@@ -65,7 +65,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="/about-us"
+                  href="#"
                   className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
                 >
                   About us
@@ -73,7 +73,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/careers"
+                  href="#"
                   className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
                 >
                   Careers
@@ -81,7 +81,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/contact-us"
+                  href="#faqs"
                   className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
                 >
                   Contact Us
