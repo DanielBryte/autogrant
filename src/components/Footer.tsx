@@ -84,7 +84,7 @@ const Footer = () => {
                   href="#faqs"
                   className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
                 >
-                  Contact Us
+                  FAQs
                 </Link>
               </li>
             </ul>
