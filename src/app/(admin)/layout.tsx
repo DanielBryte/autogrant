@@ -1,8 +1,13 @@
 "use client"
-import React from 'react';
-import { LayoutDashboard, Trophy, Search, Bell, User, ChevronDown, Menu, X, Plus } from 'lucide-react';
+import React, {useState, useEffect}from 'react';
+import { LayoutDashboard, Trophy, Search, Bell, User, ChevronDown, Menu, X, Plus, Users } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+
+import { useAuth } from '@/context/authcontext';
+import { db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import toast from 'react-hot-toast'
 
 // Define interfaces for props
 interface SidebarProps {
@@ -24,6 +29,9 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
+type UserProfile = {
+    role: 'user' | 'admin';
+};
 // Sidebar Component
 const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   const pathname = usePathname();
@@ -38,6 +46,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
       icon: Trophy,
       label: 'Manage Grants',
       href: '/admin/manage-grants'
+    },
+    {
+      icon: Users, 
+      label: 'Manage Applications',
+      href: '/admin/manage-applications'
     },
     {
       icon: Plus,
@@ -105,6 +118,63 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   );
 };
 
+
+const AdminAuthLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+  const [isVerifiedAdmin, setIsVerifiedAdmin] = useState(false);
+  
+  useEffect(() => {
+    // If auth is done loading, check the user's role
+    if (!authLoading) {
+      if (!user) {
+        // Not logged in, redirect to home/login
+        toast.error("Please log in to continue.");
+        router.push('/'); 
+        return;
+      }
+
+      // User is logged in, now check their role from Firestore
+      const checkAdminStatus = async () => {
+        const userDocRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(userDocRef);
+
+        if (docSnap.exists()) {
+          const userProfile = docSnap.data() as UserProfile;
+          if (userProfile.role === 'admin') {
+            setIsVerifiedAdmin(true); // It's an admin!
+          } else {
+            // It's a regular user, deny access
+            toast.error("You do not have permission to access this page.");
+            router.push('/dashboard');
+          }
+        } else {
+          // Profile doesn't exist, deny access
+           toast.error("User profile not found.");
+           router.push('/dashboard');
+        }
+      };
+
+      checkAdminStatus();
+    }
+  }, [user, authLoading, router]);
+
+  // While we're checking auth or verifying the admin role, show a loading screen.
+  if (authLoading || !isVerifiedAdmin) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-gray-50">
+        <p>Verifying access...</p>
+      </div>
+    );
+  }
+
+  // If all checks pass, render the layout with the page content
+  return children;
+};
+
+
+
+
 // TopBar Component
 const TopBar: React.FC<TopBarProps> = ({ className = '', onMenuClick }) => {
   return (
@@ -144,44 +214,52 @@ const TopBar: React.FC<TopBarProps> = ({ className = '', onMenuClick }) => {
   );
 };
 
+
+
+
 // Dashboard Layout Component
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
+function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
-      {/* Mobile Sidebar Overlay */}
-      {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-gray-600 bg-opacity-75 z-20 lg:hidden"
-          onClick={closeMobileMenu}
-        />
-      )}
+    <AdminAuthLayout>
+      <div className="flex h-screen overflow-hidden bg-gray-50">
+        {/* Mobile Sidebar Overlay */}
+        {isMobileMenuOpen && (
+          <div 
+            className="fixed inset-0 bg-gray-600 bg-opacity-75 z-20 lg:hidden"
+            onClick={closeMobileMenu}
+          />
+        )}
 
-      {/* Sidebar */}
-      <div className={`
-        fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
-        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
-        <Sidebar onClose={closeMobileMenu} />
-      </div>
-      
-      {/* Main content area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <TopBar 
-          onMenuClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        />
+        {/* Sidebar */}
+        <div className={`
+          fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
+          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+        `}>
+          <Sidebar onClose={closeMobileMenu} />
+        </div>
         
-        <main className="flex-1 overflow-auto bg-white md:bg-gray-50">
-          <div className="container mx-auto px-4 py-6 max-w-7xl">
-            {children}
-          </div>
-        </main>
+        {/* Main content area */}
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+          <TopBar 
+            onMenuClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          />
+          
+          <main className="flex-1 overflow-auto bg-white md:bg-gray-50">
+            <div className="container mx-auto px-4 py-6 max-w-7xl">
+              {children}
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
-  );
+      </AdminAuthLayout>
+    );
+
 };
 
 export default DashboardLayout;
+
+   
