@@ -74,7 +74,6 @@ function ActionDropdown({ grant, onAction }: { grant: Application, onAction: (ac
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* THE FIX IS HERE: Added (e) and e.stopPropagation() */}
       <Button variant="ghost" size="sm" className="w-8 h-8 p-0" onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}>
         <MoreHorizontal className="w-4 h-4" />
       </Button>

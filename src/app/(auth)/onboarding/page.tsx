@@ -53,7 +53,6 @@ export default function OnboardingPage() {
     const loadingToast = toast.loading("Setting up your profile...");
 
     try {
-        // 1. Prepare the core user data for the main user document
       const userDocRef = doc(db, "users", user.uid);
       const coreUserData = {
         uid: user.uid,
@@ -64,7 +63,6 @@ export default function OnboardingPage() {
         createdAt: serverTimestamp(),
       };
 
-      // 2. Prepare the business data for the new subcollection document
       const profileCollectionRef = collection(db, "users", user.uid, "businessProfiles");
       const businessProfileData = {
         businessName: formData.businessName,
@@ -77,7 +75,6 @@ export default function OnboardingPage() {
         createdAt: serverTimestamp(),
       };
 
-      // 3. Perform all database operations together
       await Promise.all([
         setDoc(userDocRef, coreUserData, { merge: true }),
         addDoc(profileCollectionRef, businessProfileData),

@@ -7,7 +7,6 @@ import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
 interface BusinessProfile {
   id: string;
   businessName: string;
-  // Add any other fields you want to have available globally
 }
 
 interface ProfileContextType {
@@ -42,8 +41,6 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
       })) as BusinessProfile[];
       
       setProfiles(profilesData);
-      
-      // If no profile is selected, or the selected one no longer exists, default to the first one
       if (profilesData.length > 0 && (!selectedProfile || !profilesData.find(p => p.id === selectedProfile.id))) {
         setSelectedProfile(profilesData[0]);
       } else if (profilesData.length === 0) {

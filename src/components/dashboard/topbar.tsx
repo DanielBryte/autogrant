@@ -43,8 +43,6 @@ export default function TopBar({ className, showSearch = true }: TopBarProps) {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // This notification state is still static for now.
-  // We can build the dynamic notification system next.
   const [notifications, setNotifications] = useState<Notification[]>([
     { id: "1", title: "New Grant Available", message: "Small Business Innovation Research grant is now open", time: "2 hours ago", isRead: false },
     { id: "2", title: "Application Status Update", message: "Your Tech Startup Grant application is under review", time: "1 day ago", isRead: false },
@@ -81,10 +79,9 @@ export default function TopBar({ className, showSearch = true }: TopBarProps) {
   const handleSignOut = async () => {
     try {
         await signOut(auth);
-        router.push('/'); // Redirect to homepage after sign out
+        router.push('/'); 
     } catch (error) {
         console.error("Error signing out: ", error);
-        // You can add a toast notification here for the error if you'd like
     }
   };
 

@@ -9,14 +9,14 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 
-// Interfaces for our data, using string IDs for Firestore
+
 interface Application {
-  id: string; // This is the applicationId
+  id: string; 
   grantName: string;
 }
 
 interface Milestone {
-  id: string; // This is the milestoneId
+  id: string; 
   title: string;
   description: string;
   progress: number;
@@ -30,7 +30,7 @@ interface FormData {
   progress: number;
 }
 
-// ActionDropdown component defined locally to be self-contained
+
 function ActionDropdown({ milestone, onAction }: { milestone: Milestone, onAction: (action: string, milestoneId: string) => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);

@@ -29,7 +29,7 @@ interface SidebarProps {
   className?: string;
 }
 
-// This interface now only needs what the sidebar displays
+
 interface BusinessProfile {
   id: string;
   businessName: string;

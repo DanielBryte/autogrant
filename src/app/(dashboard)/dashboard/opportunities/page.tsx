@@ -67,7 +67,7 @@ const OpportunitiesPage = () => {
         const querySnapshot = await getDocs(q);
         const grantsData = querySnapshot.docs.map(doc => {
           const data = doc.data();
-          // Map Firestore data to your Opportunity interface
+          
           return {
             id: doc.id,
             title: data.grantName || 'Untitled Grant',
@@ -75,7 +75,6 @@ const OpportunitiesPage = () => {
             status: data.status || 'N/A',
             grantSize: `${data.amount} ${data.currency}` || '$0',
             deadline: data.applicationDeadline ? new Date(data.applicationDeadline).toLocaleDateString() : 'N/A',
-            // --- These fields are not in your grants collection yet, so we use placeholders ---
             region: data.geographicScope || 'Global',
             stage: 'All Stage',
             aiMatch: '80%',
@@ -113,7 +112,7 @@ const OpportunitiesPage = () => {
         grantName: selectedOpportunity.title,
         status: 'submitted',
         submittedAt: serverTimestamp(),
-        applicationForm: formData, // Save the form data as a nested object
+        applicationForm: formData, 
       };
 
       await addDoc(collection(db, "applications"), applicationData);
@@ -141,7 +140,7 @@ useEffect(() => {
         const querySnapshot = await getDocs(q);
         const grantsData = querySnapshot.docs.map(doc => {
           const data = doc.data();
-          // Map Firestore data to your Opportunity interface
+        
           return {
             id: doc.id,
             title: data.grantName || 'Untitled Grant',
@@ -149,7 +148,6 @@ useEffect(() => {
             status: data.status || 'N/A',
             grantSize: `${data.amount} ${data.currency}` || '$0',
             deadline: data.applicationDeadline ? new Date(data.applicationDeadline).toLocaleDateString() : 'N/A',
-            // --- These fields are not in your grants collection yet, so we use placeholders ---
             region: data.geographicScope || 'Global',
             stage: 'All Stage',
             aiMatch: '80%',

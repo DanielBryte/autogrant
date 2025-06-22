@@ -10,7 +10,6 @@ import { ProfileCompletionCard } from "@/components/dashboard/profile-completion
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
-// Define a type for the user's profile data
 type UserProfile = {
   firstName: string;
   lastName: string;
@@ -23,7 +22,6 @@ type UserProfile = {
   businessDescription: string;
 };
 
-// Define a type for the application data
 interface Application {
   id: string;
   grantName: string;

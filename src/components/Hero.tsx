@@ -291,7 +291,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Auth Modal */}
+    
       {/* Auth Modal */}
 {isAuthModalOpen && (
   <div className="fixed inset-0 bg-black/80 bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn">
@@ -427,15 +427,6 @@ export default function Hero() {
     </div>
   </div>
 )}
-
-
-
-
-
-
-
-
-
       <style jsx>{`
         @keyframes fadeIn {
           from { 

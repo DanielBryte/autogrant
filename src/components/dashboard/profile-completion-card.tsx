@@ -17,11 +17,10 @@ type UserProfile = {
   businessDescription: string;
 };
 
-// Update the component to accept the profile as a prop
 export function ProfileCompletionCard({ profile }: { profile: UserProfile | null }) {
   const router = useRouter();
 
-  // Calculate the completion percentage using useMemo for efficiency
+  // Calculate the completion percentage 
   const percentage = useMemo(() => {
     if (!profile) return 0;
 
@@ -31,7 +30,7 @@ export function ProfileCompletionCard({ profile }: { profile: UserProfile | null
       'businessEmail', 'website', 'industry', 'roleInCompany', 'businessDescription'
     ];
     
-    // Count how many of the fields are filled (not empty strings)
+    // ow many of the fields are filled 
     const completedFields = fields.filter(field => !!profile[field as keyof UserProfile]).length;
     
     // Calculate the percentage
@@ -62,7 +61,7 @@ export function ProfileCompletionCard({ profile }: { profile: UserProfile | null
             <p className="text-base font-medium text-gray-800">
               Your profile is not yet complete. You need a complete profile to get full access to AutoGrant AI assistance.
             </p>
-            {/* Add a button to make it easy for the user to take action */}
+          
             <Button 
               size="sm" 
               variant="link" 
