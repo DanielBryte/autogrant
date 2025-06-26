@@ -17,13 +17,9 @@ export default async function AuthLayout({ children }: AuthLayoutProps) {
 
 
   return (
-      <html lang="en">
-        <body>
           <main>
             <Toaster />
             <div className="">{children}</div>
           </main>
-        </body>
-      </html>
   );
 }

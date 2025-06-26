@@ -1,12 +1,13 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { Plus, X, Calendar, DollarSign, Building, FileText, Users, Globe, Tag, Clock } from 'lucide-react';
 import AddFieldModal from '@/components/AddFieldModal';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDoc, updateDoc, } from 'firebase/firestore';
 import { useAuth } from '@/context/authcontext';
 import toast from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+
 
 
 interface FormData {
@@ -34,6 +35,7 @@ interface FormData {
   fundingType: string;
   duration: string;
   renewability: string;
+  customFields?: CustomField[]
 }
 
 interface CustomField {
@@ -42,40 +44,73 @@ interface CustomField {
   type: string;
 }
 
-const CreateGrantsPage = () => {
-  const [formData, setFormData] = useState<FormData>({
-    grantName: '',
-    organization: '',
-    shortDescription: '',
-    fullDescription: '',
-    amount: '',
-    currency: 'USD',
-    deadline: '',
-    applicationDeadline: '',
-    category: '',
-    eligibility: '',
-    requirements: [''],
-    benefits: [''],
-    applicationProcess: '',
-    contactEmail: '',
-    contactPhone: '',
-    website: '',
-    tags: [''],
-    status: 'Draft',
-    maxApplications: '',
-    targetAudience: '',
-    geographicScope: '',
-    fundingType: 'Grant',
-    duration: '',
-    renewability: 'Non-renewable'
-  });
-
+const EditGrantPage = () => {
+    const [formData, setFormData] = useState<FormData>({
+        grantName: '',
+        organization: '',
+        shortDescription: '',
+        fullDescription: '',
+        amount: '',
+        currency: 'USD',
+        deadline: '',
+        applicationDeadline: '',
+        category: '',
+        eligibility: '',
+        requirements: [''],
+        benefits: [''],
+        applicationProcess: '',
+        contactEmail: '',
+        contactPhone: '',
+        website: '',
+        tags: [''],
+        status: 'Draft',
+        maxApplications: '',
+        targetAudience: '',
+        geographicScope: '',
+        fundingType: 'Grant',
+        duration: '',
+        renewability: 'Non-renewable'
+      });
+    
   const [customFields, setCustomFields] = useState<CustomField[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth(); 
   const router = useRouter(); 
+  const params = useParams();
+  const grantId = params.id as string;
+  const [loading, setLoading] = useState(true);
 
+
+useEffect(() => {
+    if (!grantId) return; // Exit if there's no grantId
+
+    const fetchGrantData = async () => {
+      setLoading(true);
+      try {
+        const docRef = doc(db, "grants", grantId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const grantData = docSnap.data() as FormData;
+          setFormData(grantData); // Pre-fill the form state
+          if (grantData.customFields) { // Also pre-fill custom fields if they exist
+            setCustomFields(grantData.customFields);
+          }
+        } else {
+          toast.error("Grant not found.");
+          router.push('/admin/manage-grants');
+        }
+      } catch (error) {
+        toast.error("Failed to load grant data.");
+        console.error("Fetch error: ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchGrantData();
+  }, [grantId, router]);
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData(prev => ({
@@ -120,53 +155,56 @@ const CreateGrantsPage = () => {
   };
 
 const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); 
+    e.preventDefault();
 
     if (!user) {
-        toast.error("You must be logged in as an admin to create a grant.");
+        toast.error("Authentication error.");
         return;
     }
     
     setIsSubmitting(true);
-    const loadingToast = toast.loading("Creating grant...");
+    const loadingToast = toast.loading("Updating grant...");
 
     try {
+        // Get a reference to the existing document
+        const docRef = doc(db, "grants", grantId);
+
+        // Prepare data, just like before
         const grantData = {
             ...formData,
-            customFields, 
-            // Filter out empty strings from arrays before saving
+            customFields,
             requirements: formData.requirements.filter(req => req.trim() !== ''),
             benefits: formData.benefits.filter(ben => ben.trim() !== ''),
             tags: formData.tags.filter(tag => tag.trim() !== ''),
-            // Add metadata
-            createdBy: user.uid,
-            authorName: user.displayName || 'Admin',
-            createdAt: serverTimestamp(),
+            // Add an 'updatedAt' timestamp
             updatedAt: serverTimestamp(),
         };
 
-        // Add the new document to the 'grants' collection
-        await addDoc(collection(db, "grants"), grantData);
+        // Use updateDoc instead of addDoc
+        await updateDoc(docRef, grantData);
 
-        toast.success("Grant created successfully!", { id: loadingToast });
-        
-        // Redirect to the manage grants page
+        toast.success("Grant updated successfully!", { id: loadingToast });
         router.push('/admin/manage-grants');
 
     } catch (error) {
-        console.error("Error creating grant: ", error);
-        toast.error("Failed to create grant. Please try again.", { id: loadingToast });
+        console.error("Error updating grant: ", error);
+        toast.error("Failed to update grant.", { id: loadingToast });
     } finally {
         setIsSubmitting(false);
     }
   };
+  
+  // Return a loading state while we fetch the grant data
+  if (loading) {
+    return <div className="p-6">Loading grant form...</div>;
+  }
 
   return (
     <div className="mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Add Grants</h1>
-        <p className="text-gray-600 mt-1">Add grants users can have access to</p>
+        <h1 className="text-2xl font-bold text-gray-900">Edit Grant</h1>
+        <p className="text-gray-600 mt-1">Update the details for this grant opportunity.</p>
       </div>
 
       {/* Form */}
@@ -642,4 +680,4 @@ const handleSubmit = async (e: React.FormEvent) => {
   );
 };
 
-export default CreateGrantsPage;
+export default EditGrantPage;

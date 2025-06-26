@@ -1,10 +1,14 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Filter, X, Bookmark, BookmarkCheck, Menu, ChevronDown, Settings, HelpCircle, BarChart3, Target, Wallet, User } from 'lucide-react';
 
-// Define interfaces for the data structures
+import { useAuth } from '@/context/authcontext';
+import { db } from '@/lib/firebase';
+import { collection, query, where, orderBy, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
+import toast from 'react-hot-toast';
+
 interface Opportunity {
-  id: number;
+  id: string;
   title: string;
   description: string;
   status: string;
@@ -26,13 +30,22 @@ interface FormData {
 }
 
 const OpportunitiesPage = () => {
+
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('Most recent');
   const [filterBy, setFilterBy] = useState('Industry');
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
-  const [savedOpportunities, setSavedOpportunities] = useState<Set<number>>(new Set([2, 3]));
+  const [savedOpportunities, setSavedOpportunities] = useState<Set<string>>(new Set());
   const [showFilters, setShowFilters] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  
+
   const [formData, setFormData] = useState<FormData>({
     companyName: 'Acme Menar LLC',
     businessEmail: 'hello@acme.io',
@@ -41,64 +54,131 @@ const OpportunitiesPage = () => {
     grantPurpose: 'We are building ...'
   });
 
-  // Sample opportunities data with proper logos
-  const opportunities: Opportunity[] = [
-    {
-      id: 1,
-      title: 'Tony Elumelu Foundation',
-      description: 'We are The Leading Philanthropy Empowering Young Africans Across All 54 African Countries',
-      status: 'Open',
-      region: 'Africa',
-      stage: 'All Stage',
-      grantSize: '$5000',
-      aiMatch: '87%',
-      deadline: 'Aug 15, 2025',
-      logo: '/api/placeholder/48/48',
-      logoFallback: '🌍'
-    },
-    {
-      id: 2,
-      title: 'Presidential Conditional Grant Scheme (PCGS)',
-      description: 'Nigerian government grant for nano-businesses, prioritizing vulnerable groups.',
-      status: 'Open',
-      region: 'Africa',
-      stage: 'All Stage',
-      grantSize: '$50k',
-      aiMatch: '77%',
-      deadline: 'Aug 15, 2025',
-      logo: '/api/placeholder/48/48',
-      logoFallback: '🇳🇬'
-    },
-    {
-      id: 3,
-      title: 'Bank of Industry Youth Entrepreneurship Support (YES) Programme',
-      description: 'Primarily a loan program for young Nigerian entrepreneurs (18-35) offering training, mentorship...',
-      status: 'Open',
-      region: 'Africa',
-      stage: 'All Stage',
-      grantSize: '$5000',
-      aiMatch: '89%',
-      deadline: 'Aug 15, 2025',
-      logo: '/api/placeholder/48/48',
-      logoFallback: '💰'
+  useEffect(() => {
+    setLoading(true);
+    const fetchOpenGrants = async () => {
+      try {
+        const q = query(
+          collection(db, "grants"), 
+          where("status", "==", "Open"),
+          orderBy("createdAt", "desc")
+        );
+
+        const querySnapshot = await getDocs(q);
+        const grantsData = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          
+          return {
+            id: doc.id,
+            title: data.grantName || 'Untitled Grant',
+            description: data.shortDescription || '',
+            status: data.status || 'N/A',
+            grantSize: `${data.amount} ${data.currency}` || '$0',
+            deadline: data.applicationDeadline ? new Date(data.applicationDeadline).toLocaleDateString() : 'N/A',
+            region: data.geographicScope || 'Global',
+            stage: 'All Stage',
+            aiMatch: '80%',
+            logo: '/api/placeholder/48/48',
+            logoFallback: '💰'
+          };
+        }) as Opportunity[];
+        setOpportunities(grantsData);
+      } catch (error) {
+        console.error("Error fetching grants: ", error);
+        toast.error("Could not load opportunities. You may need to create a Firestore index.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOpenGrants();
+  }, []);
+
+
+  const submitApplication = async () => {
+    if (!user || !selectedOpportunity) {
+      toast.error("Error: User or grant not found.");
+      return;
     }
-  ];
+
+    setIsSubmitting(true);
+    const loadingToast = toast.loading("Submitting application...");
+
+    try {
+      const applicationData = {
+        userId: user.uid,
+        applicantName: user.displayName || 'Unnamed User',
+        applicantEmail: user.email,
+        grantId: selectedOpportunity.id,
+        grantName: selectedOpportunity.title,
+        status: 'submitted',
+        submittedAt: serverTimestamp(),
+        applicationForm: formData, 
+      };
+
+      await addDoc(collection(db, "applications"), applicationData);
+      
+      toast.success("Application submitted successfully!", { id: loadingToast });
+      closeModal();
+    } catch (error) {
+      console.error("Error submitting application: ", error);
+      toast.error("Failed to submit application.", { id: loadingToast });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+useEffect(() => {
+    setLoading(true);
+    const fetchOpenGrants = async () => {
+      try {
+        const q = query(
+          collection(db, "grants"), 
+          where("status", "==", "Open"),
+          orderBy("createdAt", "desc")
+        );
+
+        const querySnapshot = await getDocs(q);
+        const grantsData = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+        
+          return {
+            id: doc.id,
+            title: data.grantName || 'Untitled Grant',
+            description: data.shortDescription || '',
+            status: data.status || 'N/A',
+            grantSize: `${data.amount} ${data.currency}` || '$0',
+            deadline: data.applicationDeadline ? new Date(data.applicationDeadline).toLocaleDateString() : 'N/A',
+            region: data.geographicScope || 'Global',
+            stage: 'All Stage',
+            aiMatch: '80%',
+            logo: '/api/placeholder/48/48',
+            logoFallback: '💰'
+          };
+        }) as Opportunity[];
+        setOpportunities(grantsData);
+      } catch (error) {
+        console.error("Error fetching grants: ", error);
+        toast.error("Could not load opportunities. You may need to create a Firestore index.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOpenGrants();
+  }, []);
+  
 
   const filteredOpportunities = opportunities.filter(opp =>
     opp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     opp.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const toggleSaved = (id: number) => {
-    const newSaved = new Set(savedOpportunities);
-    if (newSaved.has(id)) {
-      newSaved.delete(id);
-    } else {
-      newSaved.add(id);
-    }
-    setSavedOpportunities(newSaved);
-  };
 
+   const toggleSaved = async (opportunityId: string) => {
+    if (!user) {
+      toast.error("You must be logged in to save grants.");
+      return;
+    }
+  }
   const handleApply = (opportunity: Opportunity) => {
     setSelectedOpportunity(opportunity);
   };
@@ -114,10 +194,6 @@ const OpportunitiesPage = () => {
     }));
   };
 
-  const submitApplication = () => {
-    console.log('Submitting application:', formData);
-    closeModal();
-  };
 
   const sidebarItems = [
     { icon: BarChart3, label: 'Dashboard', active: false },
