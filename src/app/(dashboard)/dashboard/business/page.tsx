@@ -249,6 +249,10 @@ const BusinessPage = () => {
   );
 
   const renderTabContent = () => {
+
+     if (!businessData) {
+      return null; 
+    }
     switch (currentTab) {
       case 'Business Overview': return renderBusinessOverview();
       case 'Business Details': return renderBusinessDetails();
@@ -306,3 +310,5 @@ const BusinessPage = () => {
     </div>
   );
 };
+
+export default BusinessPage;
