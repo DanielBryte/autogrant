@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, X, Bookmark, BookmarkCheck, Menu, ChevronDown, Settings, HelpCircle, BarChart3, Target, Wallet, User } from 'lucide-react';
+import { Search, Filter, X, Bookmark, BookmarkCheck, Menu, ChevronDown, Settings, HelpCircle, BarChart3, Target, Wallet, User, Calendar, MapPin, DollarSign, Clock } from 'lucide-react';
 
 import { useAuth } from '@/context/authcontext';
 import { db } from '@/lib/firebase';
@@ -36,6 +36,7 @@ const OpportunitiesPage = () => {
   const [sortBy, setSortBy] = useState('Most recent');
   const [filterBy, setFilterBy] = useState('Industry');
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
+  const [overviewOpportunity, setOverviewOpportunity] = useState<Opportunity | null>(null);
   const [savedOpportunities, setSavedOpportunities] = useState<Set<string>>(new Set());
   const [showFilters, setShowFilters] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -118,7 +119,7 @@ const OpportunitiesPage = () => {
       await addDoc(collection(db, "applications"), applicationData);
       
       toast.success("Application submitted successfully!", { id: loadingToast });
-      closeModal();
+      closeApplicationModal();
     } catch (error) {
       console.error("Error submitting application: ", error);
       toast.error("Failed to submit application.", { id: loadingToast });
@@ -127,63 +128,32 @@ const OpportunitiesPage = () => {
     }
   };
   
-useEffect(() => {
-    setLoading(true);
-    const fetchOpenGrants = async () => {
-      try {
-        const q = query(
-          collection(db, "grants"), 
-          where("status", "==", "Open"),
-          orderBy("createdAt", "desc")
-        );
-
-        const querySnapshot = await getDocs(q);
-        const grantsData = querySnapshot.docs.map(doc => {
-          const data = doc.data();
-        
-          return {
-            id: doc.id,
-            title: data.grantName || 'Untitled Grant',
-            description: data.shortDescription || '',
-            status: data.status || 'N/A',
-            grantSize: `${data.amount} ${data.currency}` || '$0',
-            deadline: data.applicationDeadline ? new Date(data.applicationDeadline).toLocaleDateString() : 'N/A',
-            region: data.geographicScope || 'Global',
-            stage: 'All Stage',
-            aiMatch: '80%',
-            logo: '/api/placeholder/48/48',
-            logoFallback: '💰'
-          };
-        }) as Opportunity[];
-        setOpportunities(grantsData);
-      } catch (error) {
-        console.error("Error fetching grants: ", error);
-        toast.error("Could not load opportunities. You may need to create a Firestore index.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOpenGrants();
-  }, []);
-  
-
   const filteredOpportunities = opportunities.filter(opp =>
     opp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     opp.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-
-   const toggleSaved = async (opportunityId: string) => {
+  const toggleSaved = async (opportunityId: string) => {
     if (!user) {
       toast.error("You must be logged in to save grants.");
       return;
     }
   }
-  const handleApply = (opportunity: Opportunity) => {
-    setSelectedOpportunity(opportunity);
+
+  const handleOpportunityClick = (opportunity: Opportunity) => {
+    setOverviewOpportunity(opportunity);
   };
 
-  const closeModal = () => {
+  const handleApply = (opportunity: Opportunity) => {
+    setSelectedOpportunity(opportunity);
+    setOverviewOpportunity(null); // Close overview modal
+  };
+
+  const closeOverviewModal = () => {
+    setOverviewOpportunity(null);
+  };
+
+  const closeApplicationModal = () => {
     setSelectedOpportunity(null);
   };
 
@@ -193,7 +163,6 @@ useEffect(() => {
       [field]: value
     }));
   };
-
 
   const sidebarItems = [
     { icon: BarChart3, label: 'Dashboard', active: false },
@@ -297,7 +266,7 @@ useEffect(() => {
             ) : (
               <div className="space-y-4">
                 {filteredOpportunities.map((opportunity) => (
-                  <div key={opportunity.id} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-sm transition-shadow">
+                  <div key={opportunity.id} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-sm transition-shadow cursor-pointer">
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
                         <span className="text-lg">{opportunity.logoFallback}</span>
@@ -305,9 +274,17 @@ useEffect(() => {
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between mb-2">
-                          <h3 className="font-semibold text-gray-900 text-lg">{opportunity.title}</h3>
+                          <h3 
+                            className="font-semibold text-gray-900 text-lg hover:text-teal-600 transition-colors cursor-pointer"
+                            onClick={() => handleOpportunityClick(opportunity)}
+                          >
+                            {opportunity.title}
+                          </h3>
                           <button
-                            onClick={() => toggleSaved(opportunity.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleSaved(opportunity.id);
+                            }}
                             className="p-1 hover:bg-gray-100 rounded transition-colors"
                           >
                             {savedOpportunities.has(opportunity.id) ? (
@@ -318,7 +295,12 @@ useEffect(() => {
                           </button>
                         </div>
                         
-                        <p className="text-gray-600 mb-3 text-sm leading-relaxed">{opportunity.description}</p>
+                        <p 
+                          className="text-gray-600 mb-3 text-sm leading-relaxed cursor-pointer"
+                          onClick={() => handleOpportunityClick(opportunity)}
+                        >
+                          {opportunity.description}
+                        </p>
                         
                         <div className="flex items-center gap-2 mb-4">
                           <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">{opportunity.status}</span>
@@ -337,7 +319,10 @@ useEffect(() => {
                           </div>
                           
                           <button
-                            onClick={() => handleApply(opportunity)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleApply(opportunity);
+                            }}
                             className="bg-black text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors text-sm"
                           >
                             Apply
@@ -353,6 +338,142 @@ useEffect(() => {
         </div>
       </div>
 
+      {/* Overview Modal */}
+      {overviewOpportunity && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
+          <div className="bg-white rounded-t-lg sm:rounded-lg w-full max-w-6xl max-h-[95vh] overflow-y-auto animate-slide-up">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white rounded-t-lg">
+              <h2 className="text-2xl font-bold text-gray-900">Grant Overview</h2>
+              <button
+                onClick={closeOverviewModal}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-2xl">{overviewOpportunity.logoFallback}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-gray-900 text-2xl mb-2">{overviewOpportunity.title}</h3>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded">
+                      {overviewOpportunity.status}
+                    </span>
+                    <span className="text-teal-600 font-medium text-sm">AI Match: {overviewOpportunity.aiMatch}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <DollarSign className="w-5 h-5 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-600">Grant Size</span>
+                  </div>
+                  <div className="text-xl font-bold text-gray-900">{overviewOpportunity.grantSize}</div>
+                </div>
+                
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Calendar className="w-5 h-5 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-600">Deadline</span>
+                  </div>
+                  <div className="text-xl font-bold text-red-600">{overviewOpportunity.deadline}</div>
+                </div>
+                
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <MapPin className="w-5 h-5 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-600">Region</span>
+                  </div>
+                  <div className="text-xl font-bold text-gray-900">{overviewOpportunity.region}</div>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">Description</h4>
+                <p className="text-gray-600 leading-relaxed">{overviewOpportunity.description}</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Grant Details</h4>
+                  <div className="space-y-3">
+                    <div className="flex justify-between py-2 border-b border-gray-100">
+                      <span className="text-gray-600">Stage</span>
+                      <span className="font-medium">{overviewOpportunity.stage}</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-gray-100">
+                      <span className="text-gray-600">Region</span>
+                      <span className="font-medium">{overviewOpportunity.region}</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-gray-100">
+                      <span className="text-gray-600">Grant Size</span>
+                      <span className="font-medium">{overviewOpportunity.grantSize}</span>
+                    </div>
+                    <div className="flex justify-between py-2">
+                      <span className="text-gray-600">Status</span>
+                      <span className="font-medium text-green-600">{overviewOpportunity.status}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Compatibility Score</h4>
+                  <div className="bg-gray-50 rounded-lg p-6 text-center">
+                    <div className="text-4xl font-bold text-teal-600 mb-2">{overviewOpportunity.aiMatch}</div>
+                    <div className="text-lg font-medium text-gray-900 mb-2">Good Match</div>
+                    <p className="text-sm text-gray-600">Your business aligns well with this grant opportunity</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">Requirements</h4>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li>• Business must be registered and operational</li>
+                    <li>• Must demonstrate clear alignment with grant objectives</li>
+                    <li>• Provide detailed project proposal and budget</li>
+                    <li>• Show evidence of previous project success (if applicable)</li>
+                    <li>• Submit complete application before deadline</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex gap-4 pt-6 border-t border-gray-200">
+                <button
+                  onClick={() => handleApply(overviewOpportunity)}
+                  className="bg-teal-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-teal-700 transition-colors flex-1"
+                >
+                  Apply Now
+                </button>
+                <button
+                  onClick={() => toggleSaved(overviewOpportunity.id)}
+                  className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2"
+                >
+                  {savedOpportunities.has(overviewOpportunity.id) ? (
+                    <>
+                      <BookmarkCheck className="w-4 h-4" />
+                      Saved
+                    </>
+                  ) : (
+                    <>
+                      <Bookmark className="w-4 h-4" />
+                      Save
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Application Modal */}
       {selectedOpportunity && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
@@ -360,7 +481,7 @@ useEffect(() => {
             <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white rounded-t-lg">
               <h2 className="text-2xl font-bold text-gray-900">Apply</h2>
               <button
-                onClick={closeModal}
+                onClick={closeApplicationModal}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <X className="w-6 h-6" />
@@ -450,9 +571,10 @@ useEffect(() => {
 
                     <button
                       onClick={submitApplication}
-                      className="bg-teal-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-teal-700 transition-colors"
+                      disabled={isSubmitting}
+                      className="bg-teal-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Apply
+                      {isSubmitting ? 'Submitting...' : 'Submit Application'}
                     </button>
                   </div>
                 </div>
